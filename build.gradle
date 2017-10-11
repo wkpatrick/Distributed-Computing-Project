@@ -40,9 +40,9 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-task copyTask(type: Copy) {
-    from 'texts'
-    into 'build/libs'
+task copyTexts(type: Copy) {
+    from './texts/'
+    into 'build/libs/texts'
 }
 
 jar {
@@ -51,3 +51,5 @@ jar {
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
+
+jar.finalizedBy(copyTexts)

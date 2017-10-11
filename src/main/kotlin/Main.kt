@@ -29,11 +29,11 @@ fun main(args: Array<String>) = runBlocking<Unit> {
     delay(1000L)
     //val testPacket=RouterPacket(localhost,localhost,"Hello World", Operation.MESSAGE)
 
-    val illiad = File("illiad.txt")
-    val odyssey = File("odyssey.txt")
-    val aeneid = File("aeneid.txt")
-    val inferno = File("inferno.txt")
-    val combo = File("combo.txt")
+    val illiad = File("texts/illiad.txt")
+    val odyssey = File("texts/odyssey.txt")
+    val aeneid = File("texts/aeneid.txt")
+    val inferno = File("texts/inferno.txt")
+    val combo = File("texts/combo.txt")
 
     var content = illiad.readLines()
     var testPacket = RouterPacket(localhost, Pair(localhost,recieveServerPort), content, Operation.MESSAGE)
