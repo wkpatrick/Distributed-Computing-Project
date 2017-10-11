@@ -1,52 +1,75 @@
-import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
-import java.io.*
+import java.io.File
 import java.net.Inet4Address
-import java.net.ServerSocket
-import java.net.Socket
 
 fun main(args: Array<String>) = runBlocking<Unit> {
     //val server = launch(CommonPool) { launchTextServer() }
     //val client = launch(CommonPool) { launchTextClient() }
     //client.join()
     //server.join()
+
     val localhost = Inet4Address.getLocalHost() as Inet4Address
-    val testCS = ClientServer(5555, 4444, localhost, 6666)
-    testCS.launchBoth()
-}
 
-suspend fun launchTextClient() {
-    println("Starting Client")
-    val localhost = Inet4Address.getLocalHost()
+    var clientPort = 5555
+    var serverPort = 4444
+    var routerPort = 6666
+    val testCS = ClientServer(clientPort, serverPort, localhost, routerPort)
+
+    val recieveClientPort = 7777
+    val recieveServerPort = 8888
+    val testReciever = ClientServer(clientPort, recieveServerPort, localhost, routerPort)
+
+    val router = Router(routerPort)
+    router.launchRouter()
+    testCS.launchServer()
+    testReciever.launchServer()
+
+
     delay(1000L)
-    val socket = Socket(localhost, 4444)
-    val input = BufferedReader(InputStreamReader(socket.getInputStream()))
-    val output = PrintWriter(socket.getOutputStream(), true)
-    output.println("Hello World!")
-    output.println("The Server will Never Close!")
-    output.println("Forever!")
-    socket.close()
-    println("Closing Client")
-}
+    //val testPacket=RouterPacket(localhost,localhost,"Hello World", Operation.MESSAGE)
 
-suspend fun launchTextServer() {
-    println("Starting Server")
-    val localhost = Inet4Address.getLocalHost()
-    val serverSocket = ServerSocket(4444)
-    val clientServerSocket = serverSocket.accept()
-    println("Connection Accepted!: " + clientServerSocket.isConnected)
-    val input = BufferedReader(InputStreamReader(clientServerSocket.getInputStream()))
+    val illiad = File("illiad.txt")
+    val odyssey = File("odyssey.txt")
+    val aeneid = File("aeneid.txt")
+    val inferno = File("inferno.txt")
+    val combo = File("combo.txt")
 
-    println("Starting Accepting Server Input")
-    for(line in input.lines())
+    var content = illiad.readLines()
+    var testPacket = RouterPacket(localhost, Pair(localhost,recieveServerPort), content, Operation.MESSAGE)
+    testPacket.startTime = System.currentTimeMillis()
+    testCS.sendMessage(testPacket)
+
+    content = odyssey.readLines()
+    testPacket = RouterPacket(localhost, Pair(localhost,recieveServerPort), content, Operation.MESSAGE)
+    testPacket.startTime = System.currentTimeMillis()
+    testCS.sendMessage(testPacket)
+
+    content = aeneid.readLines()
+    testPacket = RouterPacket(localhost, Pair(localhost,recieveServerPort), content, Operation.MESSAGE)
+    testPacket.startTime = System.currentTimeMillis()
+    testCS.sendMessage(testPacket)
+
+    content = inferno.readLines()
+    testPacket = RouterPacket(localhost, Pair(localhost,recieveServerPort), content, Operation.MESSAGE)
+    testPacket.startTime = System.currentTimeMillis()
+    testCS.sendMessage(testPacket)
+
+    content = combo.readLines()
+    testPacket = RouterPacket(localhost, Pair(localhost,recieveServerPort), content, Operation.MESSAGE)
+    testPacket.startTime = System.currentTimeMillis()
+    testCS.sendMessage(testPacket)
+
+
+
+
+    //testCS.sendMessage(testPacket)
+
+    while(true)
     {
-        println(input.readLine())
-    }
-    println("Closing Server")
-}
 
+    }
+}
 
 
 
