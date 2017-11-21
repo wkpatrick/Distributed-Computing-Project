@@ -3,6 +3,7 @@ import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import java.io.*
+import java.nio.file.*
 import java.net.Inet4Address
 import java.net.ServerSocket
 import java.net.Socket
@@ -27,7 +28,6 @@ class ClientServer(val clientPort: Int, val serverPort: Int, val routerAddress: 
     //We dont need the destAddress because it will be included in the RoterPacket
     suspend fun sendMessage(message: RouterPacket) {
         println("Starting Client to Send Message")
-        val localhost: Inet4Address = Inet4Address.getLocalHost() as Inet4Address
         val socket = Socket(routerAddress, routerPort)
         //val socket = Socket(localhost,serverPort)
         //val inputStream = ObjectInputStream(socket.getInputStream())  Probably should never be used
@@ -49,9 +49,9 @@ class ClientServer(val clientPort: Int, val serverPort: Int, val routerAddress: 
         val localhost = Inet4Address.getLocalHost() as Inet4Address
         val serverSocket = ServerSocket(serverPort)
 
-        val clientSocket = Socket(routerAddress,routerPort) //For registering the client with the server
+        val clientSocket = Socket(routerAddress, routerPort) //For registering the client with the server
         val outPutStream = ObjectOutputStream(clientSocket.getOutputStream())
-        outPutStream.writeObject(createRegisterPacket(localhost,serverPort,routerAddress,routerPort))
+        outPutStream.writeObject(createRegisterPacket(localhost, serverPort, routerAddress, routerPort))
         clientSocket.close()
 
         while (true) {
@@ -67,20 +67,20 @@ class ClientServer(val clientPort: Int, val serverPort: Int, val routerAddress: 
                 val tempData = inputStream.readObject() as RouterPacket
                 tempData.endTime = System.currentTimeMillis()
                 val message = tempData.message as ArrayList<String>
+
+                /**
                 for(line in message)
                 {
-                    println(line)
+                println(line)
                 }
-                try
-                {
+                 **/
+                try {
                     val fileWriter = FileWriter("data.dat", true)
                     val buffWriter = BufferedWriter(fileWriter)
                     val printWriter = PrintWriter(buffWriter)
                     printWriter.println(tempData.startTime.toString() + "," + tempData.endTime.toString())
                     printWriter.close()
-                }
-                catch (error: IOException)
-                {
+                } catch (error: IOException) {
 
                 }
 
@@ -108,8 +108,7 @@ class ClientServer(val clientPort: Int, val serverPort: Int, val routerAddress: 
      *
      * @return A RouterPacket containing the nescessary info and Registration operation
      */
-    fun createRegisterPacket(sourceAddress: Inet4Address, serverPort: Int, routerAddress: Inet4Address, routerPort: Int):RouterPacket
-    {
+    fun createRegisterPacket(sourceAddress: Inet4Address, serverPort: Int, routerAddress: Inet4Address, routerPort: Int): RouterPacket {
         val retPacket = RouterPacket(sourceAddress, Pair(routerAddress, routerPort), serverPort, Operation.REGISTER)
         return retPacket
     }

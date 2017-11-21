@@ -11,3 +11,5 @@ data class RouterPacket(val sourceAddress: Inet4Address,
 enum class Operation {
     REGISTER,DISCONNECT,STATS,MESSAGE
 }
+
+
