@@ -31,8 +31,9 @@ class ProjectView : View("Project View") {
         var launchServerPortTextBox: TextField by singleAssign()
 
         var router = Router()
-        var clientServer = ClientServer(-1, Inet4Address.getLocalHost() as Inet4Address, -1)
-        var localhost = Inet4Address.getLocalHost()
+        var localhost = Inet4Address.getLocalHost().hostAddress
+        var clientServer = ClientServer(-1, localhost, -1)
+
 
 
         tab("Client/Server") {
@@ -59,33 +60,43 @@ class ProjectView : View("Project View") {
                                     val combo = File("texts/combo.txt")
 
                                     var content = illiad.readLines()
-                                    var testPacket = RouterPacket(localhost as Inet4Address, Pair(Inet4Address.getByName(serverIPTextBox.text) as Inet4Address, Integer.parseInt(serverPortTextBox.text)), content, Operation.MESSAGE)
-                                    testPacket.startTime = System.currentTimeMillis()
+                                    var testPacket = RouterPacket(Inet4Address.getByName(localhost) as Inet4Address, Pair(Inet4Address.getByName(serverIPTextBox.text) as Inet4Address, Integer.parseInt(serverPortTextBox.text)), content, Operation.MESSAGE)
+                                    testPacket.time.add(System.currentTimeMillis())
                                     val send = kotlinx.coroutines.experimental.launch(CommonPool) {
                                         clientServer.sendMessageToClient(testPacket)
                                     }
 
-                                    /**
+
                                     content = odyssey.readLines()
-                                    testPacket = RouterPacket(localhost, Pair(localhost,recieveServerPort), content, Operation.MESSAGE)
-                                    testPacket.startTime = System.currentTimeMillis()
-                                    testCS.sendMessage(testPacket)
+                                    testPacket = RouterPacket(Inet4Address.getByName(localhost) as Inet4Address, Pair(Inet4Address.getByName(serverIPTextBox.text) as Inet4Address, Integer.parseInt(serverPortTextBox.text)), content, Operation.MESSAGE)
+                                    testPacket.time.add(System.currentTimeMillis())
+                                    val send2 = kotlinx.coroutines.experimental.launch(CommonPool) {
+                                        clientServer.sendMessageToClient(testPacket)
+                                    }
 
                                     content = aeneid.readLines()
-                                    testPacket = RouterPacket(localhost, Pair(localhost,recieveServerPort), content, Operation.MESSAGE)
-                                    testPacket.startTime = System.currentTimeMillis()
-                                    testCS.sendMessage(testPacket)
+                                    testPacket = RouterPacket(Inet4Address.getByName(localhost) as Inet4Address, Pair(Inet4Address.getByName(serverIPTextBox.text) as Inet4Address, Integer.parseInt(serverPortTextBox.text)), content, Operation.MESSAGE)
+                                    testPacket.time.add(System.currentTimeMillis())
+                                    val send3 = kotlinx.coroutines.experimental.launch(CommonPool) {
+                                        clientServer.sendMessageToClient(testPacket)
+                                    }
+
 
                                     content = inferno.readLines()
-                                    testPacket = RouterPacket(localhost, Pair(localhost,recieveServerPort), content, Operation.MESSAGE)
-                                    testPacket.startTime = System.currentTimeMillis()
-                                    testCS.sendMessage(testPacket)
+                                    testPacket = RouterPacket(Inet4Address.getByName(localhost) as Inet4Address, Pair(Inet4Address.getByName(serverIPTextBox.text) as Inet4Address, Integer.parseInt(serverPortTextBox.text)), content, Operation.MESSAGE)
+                                    testPacket.time.add(System.currentTimeMillis())
+                                    val send4 = kotlinx.coroutines.experimental.launch(CommonPool) {
+                                        clientServer.sendMessageToClient(testPacket)
+                                    }
+
 
                                     content = combo.readLines()
-                                    testPacket = RouterPacket(localhost, Pair(localhost,recieveServerPort), content, Operation.MESSAGE)
-                                    testPacket.startTime = System.currentTimeMillis()
-                                    testCS.sendMessage(testPacket)
-                                     **/
+                                    testPacket = RouterPacket(Inet4Address.getByName(localhost) as Inet4Address, Pair(Inet4Address.getByName(serverIPTextBox.text) as Inet4Address, Integer.parseInt(serverPortTextBox.text)), content, Operation.MESSAGE)
+                                    testPacket.time.add(System.currentTimeMillis())
+                                    val send5 = kotlinx.coroutines.experimental.launch(CommonPool) {
+                                        clientServer.sendMessageToClient(testPacket)
+                                    }
+
                                 }
                             }
                         }
@@ -112,13 +123,13 @@ class ProjectView : View("Project View") {
                                     runAsync {
                                         clientServer = ClientServer(Integer.parseInt(
                                                 launchServerPortTextBox.text),
-                                                Inet4Address.getByName(routerIPTextBox.text) as Inet4Address,
+                                                routerIPTextBox.text,
                                                 Integer.parseInt(routerPortTextBox.text)
                                         )
                                         val cliServ = kotlinx.coroutines.experimental.launch(CommonPool) {
                                             clientServer.launchObjectServer(
                                                     Integer.parseInt(launchServerPortTextBox.text),
-                                                    Inet4Address.getByName(routerIPTextBox.text) as Inet4Address,
+                                                    routerIPTextBox.text,
                                                     Integer.parseInt(routerPortTextBox.text)
                                             )
                                         }

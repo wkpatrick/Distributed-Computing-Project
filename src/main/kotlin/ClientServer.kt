@@ -18,7 +18,7 @@ import java.net.SocketException
  * @param routerPort: The port of the router
  */
 
-class ClientServer(val serverPort: Int, val routerAddress: Inet4Address, val routerPort: Int) {
+class ClientServer(val serverPort: Int, val routerAddress: String, val routerPort: Int) {
 
     //The msg queue is so that we can check with the routers that the recipient exists, they send confirmation back and then we send the msg
     var msgQueue = ArrayList<RouterPacket>()
@@ -67,14 +67,15 @@ class ClientServer(val serverPort: Int, val routerAddress: Inet4Address, val rou
      * @param routerAddress: The address of the router
      * @param routerPort: The port that the router uses to listen on
      */
-    suspend fun launchObjectServer(serverPort: Int, routerAddress: Inet4Address,routerPort: Int) {
+    suspend fun launchObjectServer(serverPort: Int, routerAddress: String,routerPort: Int) {
         println("Starting Server")
-        val localhost = Inet4Address.getLocalHost() as Inet4Address
+        val localhost = Inet4Address.getLocalHost().hostAddress
         val serverSocket = ServerSocket(serverPort)
 
         val clientSocket = Socket(routerAddress, routerPort) //For registering the client with the server
         val outPutStream = ObjectOutputStream(clientSocket.getOutputStream())
-        outPutStream.writeObject(createRegisterPacket(localhost, serverPort, routerAddress, routerPort))
+
+        outPutStream.writeObject(createRegisterPacket(Inet4Address.getByName(localhost) as Inet4Address, serverPort, Inet4Address.getByName(routerAddress) as Inet4Address, routerPort))
         clientSocket.close()
 
         while (true) {
@@ -89,7 +90,7 @@ class ClientServer(val serverPort: Int, val routerAddress: Inet4Address, val rou
 
 
                 val tempData = inputStream.readObject() as RouterPacket
-                tempData.endTime = System.currentTimeMillis()
+                tempData.time.add(System.currentTimeMillis())
                 println("Type: " + tempData.type.toString())
                 //Here we test to see if its a message we want, or a returned check message
                 if (tempData.type == Operation.MESSAGE) {
@@ -105,7 +106,11 @@ class ClientServer(val serverPort: Int, val routerAddress: Inet4Address, val rou
                         val fileWriter = FileWriter("data.dat", true)
                         val buffWriter = BufferedWriter(fileWriter)
                         val printWriter = PrintWriter(buffWriter)
-                        printWriter.println(tempData.startTime.toString() + "," + tempData.endTime.toString())
+                        for (time in tempData.time)
+                        {
+                            printWriter.print(time.toString() + ", ")
+                        }
+                        printWriter.println()
                         printWriter.close()
                     } catch (error: IOException) {
 
@@ -121,6 +126,7 @@ class ClientServer(val serverPort: Int, val routerAddress: Inet4Address, val rou
                         val dest = tempData.message as Pair<Inet4Address,Int>
                         if (dest.second.toString() == message.destination.second.toString()) {
                             tempData.destination = dest
+                            message.time.add(System.currentTimeMillis())
                             sendMessage(message)
                             msgQueue.remove(message)
                         }

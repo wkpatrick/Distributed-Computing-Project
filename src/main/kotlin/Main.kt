@@ -86,9 +86,6 @@ fun main(args: Array<String>) = runBlocking<Unit> {
 }
 
 class DistributedComputingProject : App(ProjectView::class, Styles::class){
-    override fun start(stage: Stage) {
-        super.start(stage)
-    }
 }
 
 class Styles : Stylesheet() {

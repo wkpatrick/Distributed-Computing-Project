@@ -1,18 +1,18 @@
 import java.io.Serializable
 import java.net.Inet4Address
 
-//TODO: replace startTime and endTime with an ArrayList of times, for Start,Router,Bounce(?), End
+//Time is an arrayList of the time it takes to do the following:
+//      Get time for the confirmation the remote server exists (t2 - t1)
+//      Get time for how long it takes to send the text (t3-t2)
 data class RouterPacket(val sourceAddress: Inet4Address,
                         var destination: Pair<Inet4Address, Int>,
                         val message: Any,
                         val type: Operation,
-                        var startTime: Long = 0,
-                        var endTime: Long = 0) : Serializable
+                        var time: ArrayList<Long> = ArrayList()) : Serializable
 
 //The different Operations and their uses are described in the Router class file
-//REMOVE is used on the client Server, that way we can remove
 enum class Operation {
-    REGISTER, DISCONNECT, STATS, MESSAGE, LIST, BOUNCE, CHECK, REMOVE
+    REGISTER, DISCONNECT, STATS, MESSAGE, LIST, BOUNCE, CHECK
 }
 
 
