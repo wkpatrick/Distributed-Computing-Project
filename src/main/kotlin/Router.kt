@@ -90,13 +90,16 @@ class Router()
                         routerList.add(Pair(tempData.sourceAddress, tempData.message as Int))
                     }
                 //A bounce packet is recieved from other routers that dont have the destination in their list of clients, the router that recieves it just sends it to a client if it is in its list, if not it just
+                // The message contains the router port we send it back to, and destination contains the client we are looking for,
+                // So we send the client back with it in message?
                     Operation.BOUNCE -> {
                         for (client in clientList) {
-                            if (tempData.destination == client) {
+                            //TODO: Return this to using normal destination
+                            if (tempData.destination.second == client.second) {
                                 val checkMessage = RouterPacket(
                                         sourceAddress = tempData.sourceAddress,
                                         destination = Pair(tempData.sourceAddress, tempData.message as Int),
-                                        message = tempData.message,
+                                        message = tempData.destination,
                                         type = Operation.CHECK
                                 )
                                 sendMessage(checkMessage)
@@ -109,7 +112,7 @@ class Router()
                     Operation.CHECK -> {
                         var isClient = false
                         for (client in clientList) {
-                            if ( tempData.destination.second.toString() == client.second.toString()) {
+                            if (tempData.destination.second.toString() == client.second.toString()) {
                                 val checkMessage = RouterPacket(
                                         sourceAddress = tempData.sourceAddress,
                                         destination = Pair(tempData.sourceAddress, tempData.message as Int),

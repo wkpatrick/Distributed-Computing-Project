@@ -98,9 +98,11 @@ class ClientServer(val serverPort: Int, val routerAddress: String, val routerPor
                     val message = tempData.message as ArrayList<String>
 
 
+                    /**
                     for (line in message) {
                         println(line)
                     }
+                    **/
 
                     try {
                         val fileWriter = FileWriter("data.dat", true)
