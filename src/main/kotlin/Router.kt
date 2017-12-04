@@ -112,7 +112,7 @@ class Router()
                     Operation.CHECK -> {
                         var isClient = false
                         for (client in clientList) {
-                            if (tempData.destination.second.toString() == client.second.toString()) {
+                            if (tempData.destination.second.toString() == client.second.toString() && tempData.destination.first.toString() == client.first.toString()) {
                                 val checkMessage = RouterPacket(
                                         sourceAddress = tempData.sourceAddress,
                                         destination = Pair(tempData.sourceAddress, tempData.message as Int),
